@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberToolkit — Security Utilities Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-icon">⬡</span>
+        <span class="brand-name">CyberToolkit</span>
+        <span class="brand-tag">v1.0.0</span>
+      </div>
+      <p class="brand-sub">A personal suite of cryptographic &amp; security utilities</p>
+    </div>
+    <div class="scanline" aria-hidden="true"></div>
+  </header>
+
+  <!-- Navigation tabs -->
+  <nav class="tool-nav" role="tablist" aria-label="Security tools">
+    <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="password">
+      <span class="tab-icon">🔐</span> Password Checker
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="caesar">
+      <span class="tab-icon">🔄</span> Caesar Cipher
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="hash">
+      <span class="tab-icon">#</span> Hash Generator
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="base64">
+      <span class="tab-icon">⇄</span> Base64 Codec
+    </button>
+  </nav>
+
+  <!-- Tool Panels -->
+  <main class="tool-stage">
+
+    <!-- 1. Password Strength Checker -->
+    <section class="tool-panel active" id="tab-password" role="tabpanel">
+      <div class="terminal-card">
+        <div class="terminal-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="terminal-title">password_strength.js</span>
+        </div>
+        <div class="terminal-body">
+          <label class="field-label" for="pw-input">Enter a password to analyse</label>
+          <div class="input-row">
+            <input class="mono-input" type="password" id="pw-input" placeholder="Type your password…" autocomplete="new-password" />
+            <button class="icon-btn" id="pw-toggle" aria-label="Toggle visibility" title="Show / hide">👁</button>
+          </div>
+
+          <div class="meter-wrap" aria-live="polite">
+            <div class="meter-track">
+              <div class="meter-fill" id="pw-meter"></div>
+            </div>
+            <span class="meter-label" id="pw-label">—</span>
+          </div>
+
+          <div class="criteria-grid" id="pw-criteria">
+            <div class="criterion" id="cr-length">  &gt; 8 chars</div>
+            <div class="criterion" id="cr-upper">   A–Z uppercase</div>
+            <div class="criterion" id="cr-lower">   a–z lowercase</div>
+            <div class="criterion" id="cr-digit">   0–9 digit</div>
+            <div class="criterion" id="cr-special">  !@#$ special</div>
+            <div class="criterion" id="cr-long">   16+ chars (elite)</div>
+          </div>
+
+          <div class="output-block" id="pw-output" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Caesar Cipher -->
+    <section class="tool-panel" id="tab-caesar" role="tabpanel">
+      <div class="terminal-card">
+        <div class="terminal-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="terminal-title">caesar_cipher.js</span>
+        </div>
+        <div class="terminal-body">
+          <label class="field-label" for="caesar-input">Plaintext / Ciphertext</label>
+          <textarea class="mono-input" id="caesar-input" rows="4" placeholder="Enter text to encode or decode…"></textarea>
+
+          <div class="controls-row">
+            <div class="shift-wrap">
+              <label class="field-label" for="caesar-shift">Shift (ROT)</label>
+              <input class="mono-input shift-input" type="number" id="caesar-shift" value="13" min="1" max="25" />
+            </div>
+            <div class="btn-group">
+              <button class="action-btn" id="caesar-encode">Encode →</button>
+              <button class="action-btn secondary" id="caesar-decode">← Decode</button>
+            </div>
+          </div>
+
+          <label class="field-label">Output</label>
+          <div class="output-block copyable" id="caesar-output" tabindex="0" aria-live="polite">Result will appear here…</div>
+          <button class="copy-btn" data-target="caesar-output">Copy output</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Hash Generator -->
+    <section class="tool-panel" id="tab-hash" role="tabpanel">
+      <div class="terminal-card">
+        <div class="terminal-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="terminal-title">hash_generator.js</span>
+        </div>
+        <div class="terminal-body">
+          <label class="field-label" for="hash-input">Input string</label>
+          <textarea class="mono-input" id="hash-input" rows="3" placeholder="Enter any text to hash…"></textarea>
+
+          <div class="algo-row">
+            <label class="field-label">Algorithm</label>
+            <div class="algo-pills">
+              <button class="pill active" data-algo="SHA-1">SHA-1</button>
+              <button class="pill" data-algo="SHA-256">SHA-256</button>
+              <button class="pill" data-algo="SHA-384">SHA-384</button>
+              <button class="pill" data-algo="SHA-512">SHA-512</button>
+            </div>
+          </div>
+
+          <button class="action-btn full-width" id="hash-run">Generate Hash</button>
+
+          <label class="field-label">Digest</label>
+          <div class="output-block copyable hash-output" id="hash-output" tabindex="0" aria-live="polite">Digest will appear here…</div>
+          <div class="hash-meta" id="hash-meta"></div>
+          <button class="copy-btn" data-target="hash-output">Copy digest</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Base64 Encoder and Decoder-->
+    <section class="tool-panel" id="tab-base64" role="tabpanel">
+      <div class="terminal-card">
+        <div class="terminal-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="terminal-title">base64_codec.js</span>
+        </div>
+        <div class="terminal-body">
+          <label class="field-label" for="b64-input">Input</label>
+          <textarea class="mono-input" id="b64-input" rows="4" placeholder="Enter text or Base64 string…"></textarea>
+
+          <div class="btn-group centered">
+            <button class="action-btn" id="b64-encode">Encode → Base64</button>
+            <button class="action-btn secondary" id="b64-decode">Decode ← Base64</button>
+          </div>
+
+          <label class="field-label">Output</label>
+          <div class="output-block copyable" id="b64-output" tabindex="0" aria-live="polite">Result will appear here…</div>
+          <button class="copy-btn" data-target="b64-output">Copy output</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>CyberToolkit · Securely encrypt your files · No data leaves your browser</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
