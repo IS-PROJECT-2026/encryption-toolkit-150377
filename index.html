@@ -26,7 +26,6 @@
           <path d="M9 12l2 2 4-4" stroke-width="2"/>
         </svg>
         <span class="brand-name">CyberToolkit</span>
-        <span class="brand-tag">v1.0.0</span>
       </div>
       <p class="brand-sub">A personal suite of cryptographic &amp; security utilities</p>
     </div>
@@ -36,22 +35,22 @@
   <!-- Navigation tabs -->
   <nav class="tool-nav" role="tablist" aria-label="Security tools">
     <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="password">
-      <!-- Lock icon -->>
+      <!-- Lock icon -->
        <svg class="tab-svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
        Password Checker
     </button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="caesar">
-      <!-- Rotate icon -->>
+      <!-- Rotate icon -->
        <svg class="tab-svg" viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
        Caesar Cipher
     </button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="hash">
-      <!-- Fingerprint icon -->>
+      <!-- Fingerprint icon -->
       <svg class="tab-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10"/><path d="M12 8c-2.21 0-4 1.79-4 4"/><path d="M12 12v4"/><path d="M8 16h8"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
       Hash Generator 
     </button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="base64">
-        <!-- Arrow icon -->>
+        <!-- Arrow icon -->
          <svg class="tab-svg" viewBox="0 0 24 24" aria-hidden="true"><polyline points="17 8 21 12 17 16"/><polyline points="7 8 3 12 7 16"/><line x1="21" y1="12" x2="3" y2="12"/></svg>
          Base64 Encoder &amp; Decoder
     </button>
@@ -64,6 +63,7 @@
     <section class="tool-panel active" id="tab-password" role="tabpanel">
       <div class="terminal-card">
         <div class="terminal-body">
+        <h2 class="card-title">Password Strength Checker</h2>
           <label class="field-label" for="pw-input">Enter a password to analyse</label>
           <div class="input-row">
             <input class="mono-input" type="password" id="pw-input" placeholder="Type your password…" autocomplete="new-password" />
@@ -95,6 +95,7 @@
     <section class="tool-panel" id="tab-caesar" role="tabpanel">
       <div class="terminal-card">
         <div class="terminal-body">
+          <h2 class="card-title">Caesar Cipher</h2>
           <label class="field-label" for="caesar-input">Plaintext / Ciphertext</label>
           <textarea class="mono-input" id="caesar-input" rows="4" placeholder="Enter text to encode or decode…"></textarea>
 
@@ -120,6 +121,7 @@
     <section class="tool-panel" id="tab-hash" role="tabpanel">
       <div class="terminal-card">
         <div class="terminal-body">
+          <h2 class="card-title">Hash Generator</h2>
           <label class="field-label" for="hash-input">Input string</label>
           <textarea class="mono-input" id="hash-input" rows="3" placeholder="Enter any text to hash…"></textarea>
 
@@ -147,6 +149,7 @@
     <section class="tool-panel" id="tab-base64" role="tabpanel">
       <div class="terminal-card">
         <div class="terminal-body">
+          <h2 class="card-title">Base64 Encoder & Decoder</h2>  
           <label class="field-label" for="b64-input">Input</label>
           <textarea class="mono-input" id="b64-input" rows="4" placeholder="Enter text or Base64 string…"></textarea>
 
