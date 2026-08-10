@@ -132,6 +132,22 @@ pwToggle.addEventListener('click', () => {
   pwToggle.textContent = isHidden ? '🙈' : '👁';
 });
 
+/* Password generator*/
+const CHARSET = 'abcderghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}';
+
+function generatePassword(length = 15) {
+    const arr = new Uint8Array(length);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b => CHARSET[b % CHARSET.length]).join('');
+}
+
+document.getElementById('pw-generate').addEventListener('click', () => {
+  const pw = generatePassword(20);
+  pwInput.value = pw;
+  pwInput.type  = 'text';
+  pwToggle.textContent = '🙈';
+  updatePasswordUI(pw);
+});
 
 /* ══════════════════════════════════════════════════════════════
    TOOL 2 — CAESAR CIPHER
