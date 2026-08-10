@@ -120,7 +120,14 @@
 
           <label class="field-label">Output</label>
           <div class="output-block copyable" id="caesar-output" tabindex="0" aria-live="polite">Result will appear here…</div>
-          <button class="copy-btn" data-target="caesar-output">Copy output</button>
+          <div class="btn-group">
+            <button class="copy-btn" data-target="caesar-output">Copy output</button>
+            <button class="action-btn secondary" id="caesar-bruteforce">Brute Force All Shifts</button>
+          </div>
+          <div id="caesar-brute-wrap" style="display:none;">
+            <label class="field-label" style="margin-top:0.5rem;">All 25 Decodings</label>
+            <div class="output-block" id="caesar-brute-output" style="max-height:220px;overflow-y:auto;font-size:0.75rem;line-height:1.9;" aria-live="polite"></div>
+          </div>
         </div>
       </div>
     </section>
