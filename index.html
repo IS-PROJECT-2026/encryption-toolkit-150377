@@ -54,6 +54,11 @@
          <svg class="tab-svg" viewBox="0 0 24 24" aria-hidden="true"><polyline points="17 8 21 12 17 16"/><polyline points="7 8 3 12 7 16"/><line x1="21" y1="12" x2="3" y2="12"/></svg>
          Base64 Encoder &amp; Decoder
     </button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="fileenc">
+      <!-- File lock icon -->
+      <svg class="tab-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><rect x="8" y="13" width="8" height="6" rx="1"/><path d="M10 13v-1a2 2 0 0 1 4 0v1"/></svg>
+      File Encryptor
+    </button>
   </nav>
 
   <!-- Tool Panels -->
@@ -69,6 +74,9 @@
             <input class="mono-input" type="password" id="pw-input" placeholder="Type your password…" autocomplete="new-password" />
             <button class="icon-btn" id="pw-toggle" aria-label="Toggle visibility" title="Show / hide">👁</button>
           </div>
+
+           <button class="action-btn secondary full-width" id="pw-generate">Generate Strong Password</button>
+ 
 
           <div class="meter-wrap" aria-live="polite">
             <div class="meter-track">
