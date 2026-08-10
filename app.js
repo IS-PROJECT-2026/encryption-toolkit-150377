@@ -191,6 +191,28 @@ function runCaesar(decode) {
 document.getElementById('caesar-encode').addEventListener('click', () => runCaesar(false));
 document.getElementById('caesar-decode').addEventListener('click', () => runCaesar(true));
 
+/* Brute force — show all 25 possible decodings */
+document.getElementById('caesar-bruteforce').addEventListener('click', () => {
+  const text = caesarInput.value;
+  const wrap = document.getElementById('caesar-brute-wrap');
+  const out  = document.getElementById('caesar-brute-output');
+ 
+  if (!text.trim()) {
+    caesarOutput.textContent = 'Enter some text above first.';
+    caesarOutput.className   = 'output-block error';
+    wrap.style.display = 'none';
+    return;
+  }
+ 
+  const lines = Array.from({ length: 25 }, (_, i) => {
+    const shift = i + 1;
+    return `ROT-${String(shift).padStart(2, '0')}:  ${caesarShiftText(text, shift, true)}`;
+  });
+ 
+  out.textContent    = lines.join('\n');
+  out.className      = 'output-block has-content';
+  wrap.style.display = 'block';
+});
 
 /* ══════════════════════════════════════════════════════════════
    TOOL 3 — HASH GENERATOR (Web Crypto API)
