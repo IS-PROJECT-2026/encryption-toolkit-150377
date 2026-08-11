@@ -272,6 +272,43 @@ hashInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateHash(); }
 });
 
+/* File hashing feature */
+const hashFileInput = document.getElementById('hash-file-input');
+const hashDropZone  = document.getElementById('hash-drop-zone');
+const hashFileName  = document.getElementById('hash-file-name');
+ 
+async function hashFile(file) {
+  hashFileName.textContent   = `Hashing: ${file.name}…`;
+  hashOutput.textContent     = 'Computing…';
+  hashOutput.className       = 'output-block hash-output';
+  hashMeta.textContent       = '';
+ 
+  try {
+    const buf    = await file.arrayBuffer();
+    const digest = await crypto.subtle.digest(selectedAlgo, buf);
+    const hex    = bufToHex(digest);
+ 
+    hashOutput.textContent = hex;
+    hashOutput.className   = 'output-block hash-output has-content';
+    hashMeta.textContent   = `${file.name}  ·  ${selectedAlgo}  ·  ${(file.size / 1024).toFixed(1)} KB`;
+    hashFileName.textContent = `File: ${file.name}`;
+  } catch (err) {
+    hashOutput.textContent = `Error: ${err.message}`;
+    hashOutput.className   = 'output-block hash-output error';
+  }
+}
+ 
+hashFileInput.addEventListener('change', () => {
+  if (hashFileInput.files[0]) hashFile(hashFileInput.files[0]);
+});
+ 
+hashDropZone.addEventListener('dragover', e => { e.preventDefault(); hashDropZone.classList.add('drag-over'); });
+hashDropZone.addEventListener('dragleave', ()  => hashDropZone.classList.remove('drag-over'));
+hashDropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  hashDropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) hashFile(e.dataTransfer.files[0]);
+});
 
 /* ══════════════════════════════════════════════════════════════
    TOOL 4 — BASE64 CODEC
