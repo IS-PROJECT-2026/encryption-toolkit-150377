@@ -187,6 +187,41 @@
       </div>
     </section>
 
+    <!-- 5. FILE ENCRYPTOR -->
+    <section class="tool-panel" id="tab-fileenc" role="tabpanel">
+      <div class="terminal-card">
+        <div class="terminal-body">
+          <h2 class="card-title">File Encryptor / Decryptor</h2>
+          <p class="tool-description">AES-256-GCM encryption derived from your passphrase via PBKDF2. All processing happens locally — your file never leaves this browser tab.</p>
+ 
+          <label class="drop-zone" id="enc-drop-zone" for="enc-file-input">
+            <svg style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span id="enc-file-name">Drop a file here or click to browse</span>
+            <input type="file" id="enc-file-input" style="display:none;" />
+          </label>
+ 
+          <label class="field-label" for="enc-passphrase">Passphrase</label>
+          <div class="input-row">
+            <input class="mono-input" type="password" id="enc-passphrase" placeholder="Enter a strong passphrase…" />
+            <button class="icon-btn" id="enc-toggle" aria-label="Toggle passphrase visibility" title="Show / hide">👁</button>
+          </div>
+ 
+          <div class="btn-group centered">
+            <button class="action-btn" id="enc-encrypt">
+              <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Encrypt &amp; Download
+            </button>
+            <button class="action-btn secondary" id="enc-decrypt">
+              <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+              Decrypt &amp; Download
+            </button>
+          </div>
+ 
+          <div class="output-block" id="enc-status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="site-footer">

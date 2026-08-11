@@ -340,3 +340,150 @@ function runBase64(encode) {
 
 document.getElementById('b64-encode').addEventListener('click', () => runBase64(true));
 document.getElementById('b64-decode').addEventListener('click', () => runBase64(false));
+
+/* ══════════════════════════════════════════════════════════════
+   TOOL 5 — FILE ENCRYPTOR / DECRYPTOR (AES-256-GCM + PBKDF2)
+   ══════════════════════════════════════════════════════════════ */
+
+const encFileInput  = document.getElementById('enc-file-input');
+const encDropZone   = document.getElementById('enc-drop-zone');
+const encFileName   = document.getElementById('enc-file-name');
+const encPassphrase = document.getElementById('enc-passphrase');
+const encStatus     = document.getElementById('enc-status');
+const encToggle     = document.getElementById('enc-toggle');
+
+let encSelectedFile = null;
+
+/* Passphrase visibility toggle */
+encToggle.addEventListener('click', () => {
+  const hidden = encPassphrase.type === 'password';
+  encPassphrase.type    = hidden ? 'text' : 'password';
+  encToggle.textContent = hidden ? '🙈' : '👁';
+});
+
+/* File selection */
+function setEncFile(file) {
+  encSelectedFile          = file;
+  encFileName.textContent  = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+  encStatus.textContent    = '';
+  encStatus.className      = 'output-block';
+}
+
+encFileInput.addEventListener('change', () => {
+  if (encFileInput.files[0]) setEncFile(encFileInput.files[0]);
+});
+
+encDropZone.addEventListener('dragover',  e  => { e.preventDefault(); encDropZone.classList.add('drag-over'); });
+encDropZone.addEventListener('dragleave', ()  => encDropZone.classList.remove('drag-over'));
+encDropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  encDropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) setEncFile(e.dataTransfer.files[0]);
+});
+
+/**
+ * Derive an AES-256-GCM CryptoKey from a passphrase + salt using PBKDF2.
+ * 200,000 iterations of SHA-256 — deliberately slow to resist brute force.
+ */
+async function deriveKey(passphrase, salt) {
+  const enc      = new TextEncoder();
+  const keyMat   = await crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 200_000, hash: 'SHA-256' },
+    keyMat,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+/** Trigger a file download in the browser */
+function triggerDownload(buffer, filename) {
+  const blob = new Blob([buffer]);
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), { href: url, download: filename });
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Encrypted file format (all bytes concatenated):
+ *   [salt: 16 bytes][iv: 12 bytes][ciphertext: N bytes]
+ * The auth tag (16 bytes) is appended by AES-GCM automatically inside ciphertext.
+ */
+document.getElementById('enc-encrypt').addEventListener('click', async () => {
+  if (!encSelectedFile) {
+    encStatus.textContent = '⚠ Please select a file first.';
+    encStatus.className   = 'output-block error';
+    return;
+  }
+  if (!encPassphrase.value) {
+    encStatus.textContent = '⚠ Please enter a passphrase.';
+    encStatus.className   = 'output-block error';
+    return;
+  }
+
+  try {
+    encStatus.textContent = '⏳ Encrypting…';
+    encStatus.className   = 'output-block';
+
+    const salt       = crypto.getRandomValues(new Uint8Array(16));
+    const iv         = crypto.getRandomValues(new Uint8Array(12));
+    const key        = await deriveKey(encPassphrase.value, salt);
+    const plaintext  = await encSelectedFile.arrayBuffer();
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
+
+    /* Concatenate salt + iv + ciphertext into one output buffer */
+    const outBuf = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
+    outBuf.set(salt, 0);
+    outBuf.set(iv,   salt.length);
+    outBuf.set(new Uint8Array(ciphertext), salt.length + iv.length);
+
+    triggerDownload(outBuf, `${encSelectedFile.name}.enc`);
+
+    encStatus.textContent = `✓ Encrypted successfully → ${encSelectedFile.name}.enc downloaded.\n\nKeep your passphrase safe — there is no recovery without it.`;
+    encStatus.className   = 'output-block has-content';
+  } catch (err) {
+    encStatus.textContent = `✗ Encryption failed: ${err.message}`;
+    encStatus.className   = 'output-block error';
+  }
+});
+
+document.getElementById('enc-decrypt').addEventListener('click', async () => {
+  if (!encSelectedFile) {
+    encStatus.textContent = '⚠ Please select a .enc file first.';
+    encStatus.className   = 'output-block error';
+    return;
+  }
+  if (!encPassphrase.value) {
+    encStatus.textContent = '⚠ Please enter the passphrase used during encryption.';
+    encStatus.className   = 'output-block error';
+    return;
+  }
+
+  try {
+    encStatus.textContent = 'Decrypting…';
+    encStatus.className   = 'output-block';
+
+    const raw        = new Uint8Array(await encSelectedFile.arrayBuffer());
+    const salt       = raw.slice(0,  16);
+    const iv         = raw.slice(16, 28);
+    const ciphertext = raw.slice(28);
+
+    const key       = await deriveKey(encPassphrase.value, salt);
+    const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+
+    /* Strip the .enc extension for the output filename */
+    const outName = encSelectedFile.name.endsWith('.enc')
+      ? encSelectedFile.name.slice(0, -4)
+      : `decrypted_${encSelectedFile.name}`;
+
+    triggerDownload(plaintext, outName);
+
+    encStatus.textContent = `✓ Decrypted successfully → ${outName} downloaded.`;
+    encStatus.className   = 'output-block has-content';
+  } catch {
+    encStatus.textContent = '✗ Decryption failed — wrong passphrase or corrupted file.';
+    encStatus.className   = 'output-block error';
+  }
+});
