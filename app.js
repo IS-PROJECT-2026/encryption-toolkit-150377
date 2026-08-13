@@ -145,7 +145,8 @@ pwInput.addEventListener('input', () => updatePasswordUI(pwInput.value));
 pwToggle.addEventListener('click', () => {
   const isHidden = pwInput.type === 'password';
   pwInput.type = isHidden ? 'text' : 'password';
-  pwToggle.textContent = isHidden ? '🙈' : '👁';
+  document.getElementById('pw-eye-show').style.display = isHidden ? 'none'  : '';
+  document.getElementById('pw-eye-hide').style.display = isHidden ? ''      : 'none';
 });
 
 /* Password generator*/
@@ -374,6 +375,7 @@ let encSelectedFile = null;
 /* Passphrase visibility toggle */
 encToggle.addEventListener('click', () => {
   const hidden = encPassphrase.type === 'password';
+  encPassphrase.type = hidden ? 'text' : 'password';
   document.getElementById('enc-eye-show').style.display = hidden ? 'none' : '';
   document.getElementById('enc-eye-hide').style.display = hidden ? '' : 'none';
 });
