@@ -1,5 +1,5 @@
 /* ============================================================
-   CYBER TOOLKIT — Security Utilities Dashboard
+   CYBER TOOLKIT — A Collection of Security Utilities 
    Tools: Password Checker · Caesar Cipher · Hash Generator · Base64 Codec
    All processing is client-side — no data leaves the browser.
    ============================================================ */
