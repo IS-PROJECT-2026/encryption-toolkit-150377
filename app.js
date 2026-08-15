@@ -1,5 +1,5 @@
 /* ============================================================
-   CYBER TOOLKIT — Encryption Toolkit Module
+   CYBER TOOLKIT — Collection of Encryption Techniques
    Tools: Password Checker · Caesar Cipher · Hash Generator · Base64 Codec
    All processing is client-side — no data leaves the browser.
    ============================================================ */
