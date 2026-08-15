@@ -1,10 +1,26 @@
-/* ============================================================
-   CYBER TOOLKIT — app.js
-   Tools: Password Checker · Caesar Cipher · Hash Generator · Base64 Codec
-   All processing is client-side — no data leaves the browser.
-   ============================================================ */
+
+
+
+
 
 'use strict';
+
+/* -------- INLINE STATUS ICONS ------------- */
+
+const ICON = {
+  warn:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+  error:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  loading: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`,
+  info:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+};
+ 
+/** Setting an element's innerHTML to an icon + message, with optional extra class */
+function setStatus(el, type, message, extraClass = '') {
+  el.innerHTML = `<span class="status-row">${ICON[type]}<span>${message}</span></span>`;
+  el.className = `output-block${extraClass ? ' ' + extraClass : ''}`;
+}
+
 
 /* ── TAB NAVIGATION ─────────────────────────────────────────── */
 
@@ -129,7 +145,8 @@ pwInput.addEventListener('input', () => updatePasswordUI(pwInput.value));
 pwToggle.addEventListener('click', () => {
   const isHidden = pwInput.type === 'password';
   pwInput.type = isHidden ? 'text' : 'password';
-  pwToggle.textContent = isHidden ? '🙈' : '👁';
+  document.getElementById('pw-eye-show').style.display = isHidden ? 'none'  : '';
+  document.getElementById('pw-eye-hide').style.display = isHidden ? ''      : 'none';
 });
 
 /* Password generator*/
@@ -145,7 +162,8 @@ document.getElementById('pw-generate').addEventListener('click', () => {
   const pw = generatePassword(20);
   pwInput.value = pw;
   pwInput.type  = 'text';
-  pwToggle.textContent = '🙈';
+  document.getElementById('pw-eye-show').style.display = 'none';
+  document.getElementById('pw-eye-hide').style.display = '';
   updatePasswordUI(pw);
 });
 
@@ -357,8 +375,9 @@ let encSelectedFile = null;
 /* Passphrase visibility toggle */
 encToggle.addEventListener('click', () => {
   const hidden = encPassphrase.type === 'password';
-  encPassphrase.type    = hidden ? 'text' : 'password';
-  encToggle.textContent = hidden ? '🙈' : '👁';
+  encPassphrase.type = hidden ? 'text' : 'password';
+  document.getElementById('enc-eye-show').style.display = hidden ? 'none' : '';
+  document.getElementById('enc-eye-hide').style.display = hidden ? '' : 'none';
 });
 
 /* File selection */
@@ -413,19 +432,18 @@ function triggerDownload(buffer, filename) {
  */
 document.getElementById('enc-encrypt').addEventListener('click', async () => {
   if (!encSelectedFile) {
-    encStatus.textContent = '⚠ Please select a file first.';
+    encStatus.textContent = 'Please select a file first!';
     encStatus.className   = 'output-block error';
     return;
   }
   if (!encPassphrase.value) {
-    encStatus.textContent = '⚠ Please enter a passphrase.';
+    encStatus.textContent = 'Please enter a passphrase!';
     encStatus.className   = 'output-block error';
     return;
   }
 
   try {
-    encStatus.textContent = '⏳ Encrypting…';
-    encStatus.className   = 'output-block';
+    setStatus(encStatus, 'loading', 'Encrypting…');
 
     const salt       = crypto.getRandomValues(new Uint8Array(16));
     const iv         = crypto.getRandomValues(new Uint8Array(12));
@@ -440,30 +458,26 @@ document.getElementById('enc-encrypt').addEventListener('click', async () => {
     outBuf.set(new Uint8Array(ciphertext), salt.length + iv.length);
 
     triggerDownload(outBuf, `${encSelectedFile.name}.enc`);
-
-    encStatus.textContent = `✓ Encrypted successfully → ${encSelectedFile.name}.enc downloaded.\n\nKeep your passphrase safe — there is no recovery without it.`;
-    encStatus.className   = 'output-block has-content';
+    setStatus(encStatus, 'success', `Encrypted successfully — ${encSelectedFile.name}.enc downloaded. 
+        Keep your passphrase safe — there is no recovery without it.`, 'has-content');
   } catch (err) {
-    encStatus.textContent = `✗ Encryption failed: ${err.message}`;
-    encStatus.className   = 'output-block error';
+    setStatus(encStatus, 'error', `Encryption failed: ${err.message}`, 'error');
+   
   }
 });
 
 document.getElementById('enc-decrypt').addEventListener('click', async () => {
   if (!encSelectedFile) {
-    encStatus.textContent = '⚠ Please select a .enc file first.';
-    encStatus.className   = 'output-block error';
+    setStatus(encStatus, 'warn', 'Please select a .enc file first.', 'error');
     return;
   }
   if (!encPassphrase.value) {
-    encStatus.textContent = '⚠ Please enter the passphrase used during encryption.';
-    encStatus.className   = 'output-block error';
+    setStatus(encStatus, 'warn', 'Please enter the passphrase used during encryption.', 'error');
     return;
   }
 
   try {
-    encStatus.textContent = 'Decrypting…';
-    encStatus.className   = 'output-block';
+    setStatus(encStatus, 'loading', 'Decrypting…');
 
     const raw        = new Uint8Array(await encSelectedFile.arrayBuffer());
     const salt       = raw.slice(0,  16);
@@ -480,10 +494,8 @@ document.getElementById('enc-decrypt').addEventListener('click', async () => {
 
     triggerDownload(plaintext, outName);
 
-    encStatus.textContent = `✓ Decrypted successfully → ${outName} downloaded.`;
-    encStatus.className   = 'output-block has-content';
+    setStatus(encStatus, 'success', `Decrypted successfully — ${outName} downloaded.`, 'has-content');
   } catch {
-    encStatus.textContent = '✗ Decryption failed — wrong passphrase or corrupted file.';
-    encStatus.className   = 'output-block error';
+    setStatus(encStatus, 'error', 'Decryption failed — wrong passphrase or corrupted file.', 'error');
   }
 });
