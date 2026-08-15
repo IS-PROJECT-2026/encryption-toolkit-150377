@@ -1,27 +1,10 @@
 /* ============================================================
-   CYBER TOOLKIT — A Collection of Security Utilities 
+   CYBER TOOLKIT — app.js
    Tools: Password Checker · Caesar Cipher · Hash Generator · Base64 Codec
    All processing is client-side — no data leaves the browser.
    ============================================================ */
 
 'use strict';
-
-/* -------- INLINE STATUS ICONS ------------- */
-
-const ICON = {
-  warn:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
-  error:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-  loading: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`,
-  info:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
-};
- 
-/** Setting an element's innerHTML to an icon + message, with optional extra class */
-function setStatus(el, type, message, extraClass = '') {
-  el.innerHTML = `<span class="status-row">${ICON[type]}<span>${message}</span></span>`;
-  el.className = `output-block${extraClass ? ' ' + extraClass : ''}`;
-}
-
 
 /* ── TAB NAVIGATION ─────────────────────────────────────────── */
 
@@ -146,8 +129,7 @@ pwInput.addEventListener('input', () => updatePasswordUI(pwInput.value));
 pwToggle.addEventListener('click', () => {
   const isHidden = pwInput.type === 'password';
   pwInput.type = isHidden ? 'text' : 'password';
-  document.getElementById('pw-eye-show').style.display = isHidden ? 'none'  : '';
-  document.getElementById('pw-eye-hide').style.display = isHidden ? ''      : 'none';
+  pwToggle.textContent = isHidden ? '🙈' : '👁';
 });
 
 /* Password generator*/
@@ -163,8 +145,7 @@ document.getElementById('pw-generate').addEventListener('click', () => {
   const pw = generatePassword(20);
   pwInput.value = pw;
   pwInput.type  = 'text';
-  document.getElementById('pw-eye-show').style.display = 'none';
-  document.getElementById('pw-eye-hide').style.display = '';
+  pwToggle.textContent = '🙈';
   updatePasswordUI(pw);
 });
 
@@ -359,144 +340,3 @@ function runBase64(encode) {
 
 document.getElementById('b64-encode').addEventListener('click', () => runBase64(true));
 document.getElementById('b64-decode').addEventListener('click', () => runBase64(false));
-
-/* ══════════════════════════════════════════════════════════════
-   TOOL 5 — FILE ENCRYPTOR / DECRYPTOR (AES-256-GCM + PBKDF2)
-   ══════════════════════════════════════════════════════════════ */
-
-const encFileInput  = document.getElementById('enc-file-input');
-const encDropZone   = document.getElementById('enc-drop-zone');
-const encFileName   = document.getElementById('enc-file-name');
-const encPassphrase = document.getElementById('enc-passphrase');
-const encStatus     = document.getElementById('enc-status');
-const encToggle     = document.getElementById('enc-toggle');
-
-let encSelectedFile = null;
-
-/* Passphrase visibility toggle */
-encToggle.addEventListener('click', () => {
-  const hidden = encPassphrase.type === 'password';
-  encPassphrase.type = hidden ? 'text' : 'password';
-  document.getElementById('enc-eye-show').style.display = hidden ? 'none' : '';
-  document.getElementById('enc-eye-hide').style.display = hidden ? '' : 'none';
-});
-
-/* File selection */
-function setEncFile(file) {
-  encSelectedFile          = file;
-  encFileName.textContent  = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-  encStatus.textContent    = '';
-  encStatus.className      = 'output-block';
-}
-
-encFileInput.addEventListener('change', () => {
-  if (encFileInput.files[0]) setEncFile(encFileInput.files[0]);
-});
-
-encDropZone.addEventListener('dragover',  e  => { e.preventDefault(); encDropZone.classList.add('drag-over'); });
-encDropZone.addEventListener('dragleave', ()  => encDropZone.classList.remove('drag-over'));
-encDropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  encDropZone.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) setEncFile(e.dataTransfer.files[0]);
-});
-
-/**
- * Derive an AES-256-GCM CryptoKey from a passphrase + salt using PBKDF2.
- * 200,000 iterations of SHA-256 — deliberately slow to resist brute force.
- */
-async function deriveKey(passphrase, salt) {
-  const enc      = new TextEncoder();
-  const keyMat   = await crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveKey']);
-  return crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt, iterations: 200_000, hash: 'SHA-256' },
-    keyMat,
-    { name: 'AES-GCM', length: 256 },
-    false,
-    ['encrypt', 'decrypt']
-  );
-}
-
-/** Trigger a file download in the browser */
-function triggerDownload(buffer, filename) {
-  const blob = new Blob([buffer]);
-  const url  = URL.createObjectURL(blob);
-  const a    = Object.assign(document.createElement('a'), { href: url, download: filename });
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/**
- * Encrypted file format (all bytes concatenated):
- *   [salt: 16 bytes][iv: 12 bytes][ciphertext: N bytes]
- * The auth tag (16 bytes) is appended by AES-GCM automatically inside ciphertext.
- */
-document.getElementById('enc-encrypt').addEventListener('click', async () => {
-  if (!encSelectedFile) {
-    encStatus.textContent = 'Please select a file first!';
-    encStatus.className   = 'output-block error';
-    return;
-  }
-  if (!encPassphrase.value) {
-    encStatus.textContent = 'Please enter a passphrase!';
-    encStatus.className   = 'output-block error';
-    return;
-  }
-
-  try {
-    setStatus(encStatus, 'loading', 'Encrypting…');
-
-    const salt       = crypto.getRandomValues(new Uint8Array(16));
-    const iv         = crypto.getRandomValues(new Uint8Array(12));
-    const key        = await deriveKey(encPassphrase.value, salt);
-    const plaintext  = await encSelectedFile.arrayBuffer();
-    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
-
-    /* Concatenate salt + iv + ciphertext into one output buffer */
-    const outBuf = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
-    outBuf.set(salt, 0);
-    outBuf.set(iv,   salt.length);
-    outBuf.set(new Uint8Array(ciphertext), salt.length + iv.length);
-
-    triggerDownload(outBuf, `${encSelectedFile.name}.enc`);
-    setStatus(encStatus, 'success', `Encrypted successfully — ${encSelectedFile.name}.enc downloaded. 
-        Keep your passphrase safe — there is no recovery without it.`, 'has-content');
-  } catch (err) {
-    setStatus(encStatus, 'error', `Encryption failed: ${err.message}`, 'error');
-   
-  }
-});
-
-document.getElementById('enc-decrypt').addEventListener('click', async () => {
-  if (!encSelectedFile) {
-    setStatus(encStatus, 'warn', 'Please select a .enc file first.', 'error');
-    return;
-  }
-  if (!encPassphrase.value) {
-    setStatus(encStatus, 'warn', 'Please enter the passphrase used during encryption.', 'error');
-    return;
-  }
-
-  try {
-    setStatus(encStatus, 'loading', 'Decrypting…');
-
-    const raw        = new Uint8Array(await encSelectedFile.arrayBuffer());
-    const salt       = raw.slice(0,  16);
-    const iv         = raw.slice(16, 28);
-    const ciphertext = raw.slice(28);
-
-    const key       = await deriveKey(encPassphrase.value, salt);
-    const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
-
-    /* Strip the .enc extension for the output filename */
-    const outName = encSelectedFile.name.endsWith('.enc')
-      ? encSelectedFile.name.slice(0, -4)
-      : `decrypted_${encSelectedFile.name}`;
-
-    triggerDownload(plaintext, outName);
-
-    setStatus(encStatus, 'success', `Decrypted successfully — ${outName} downloaded.`, 'has-content');
-  } catch {
-    setStatus(encStatus, 'error', 'Decryption failed — wrong passphrase or corrupted file.', 'error');
-  }
-});
