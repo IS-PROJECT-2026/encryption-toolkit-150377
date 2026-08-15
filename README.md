@@ -114,6 +114,11 @@ THE SOFTWARE.
 Caesar cipher is not cryptographically secure.
 Use the File Encryptor for sensitive data.
 
+## Security Notes
+
+All cryptographic operations use the Web Crypto API.
+No data is transmitted to any server.
+
 ## Author
 
 **Cyril-John Sinari**
