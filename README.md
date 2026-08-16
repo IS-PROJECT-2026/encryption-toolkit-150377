@@ -1,4 +1,4 @@
-# ⬡ CyberToolkit — Security Utilities Dashboard
+# CyberToolkit — Security Utilities Dashboard
 
 A lightweight, client-side cybersecurity toolkit built with HTML, CSS, and JavaScript. All cryptographic operations run entirely in the browser using the native Web Crypto API. No data ever leaves your browser or device.
 
