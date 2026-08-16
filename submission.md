@@ -33,7 +33,7 @@
 
 Link to a commit, PR, or issue where something went wrong — a bad commit message you had to fix, a branch you had to delete and recreate, a PR that needed rework, or a deployment that broke. 
 
-- **Link to the evidence:** [Paste URL here]
+- **Link to the evidence:** https://github.com/IS-PROJECT-2026/encryption-toolkit-150377/pull/23
 - **What happened and how did you recover?** While migrating the password and passphrase visibility toggles from emojis to SVG icons, I update the icon swap logic in `app.js` but forgot to include the line that actually changes the input's `type` attribute. The icons toggled correctly but the fields stayed masked regardless. I traced it back to the missing `pwInput.type = isHidden ? 'text' : 'password'` and fixed it using a dedicated `fix` branch and merged it through a PR rather than pushing it directly to main.
 
 ### C. A Pull Request You're Proud Of
@@ -62,28 +62,32 @@ Demonstrate your workflow mechanics by embedding your screenshots below.
 ### A. Milestones and Issues
 *Provide a screenshot showing your active milestone(s) and the granular tracking issues linked directly to them.*
 
-[PASTE YOUR MILESTONE SCREENSHOT DIRECTLY HERE]
+<img width="1097" height="265" alt="image" src="https://github.com/user-attachments/assets/0bf3e525-3667-4839-8f5a-1dd339a786bd" />
+
 
 - **Caption:** 3 milestones including:  **Project Structure & Layout (Issues #1-3) **, **Toolkit Implementation (Issues #4-7)**, **Polish & Deployment (Issues #8-11)**
 
 ### B. Project Board
 *Provide a screenshot of your GitHub Project Board with your issues organized dynamically across columns (To Do, In Progress, Done).*
 
-[PASTE YOUR PROJECT BOARD SCREENSHOT DIRECTLY HERE]
+<img width="1276" height="553" alt="Screenshot 2026-08-16 231658" src="https://github.com/user-attachments/assets/33b43379-9515-4bd1-b288-dfd16bafe501" />
 
-* **Caption:** [Write a brief sentence describing your board state here]
+
+* **Caption:** Kanban board tracking all 11 issues across To Do, In Progress, and Done columns. Each issue was moved manually as work progressed to reflect an accurate, real-time project timeline. All current issues are Done.
 
 ### C. Branching Architecture
 *Provide a screenshot showing your local or remote Git branch list, highlighting your use of conventional, issue-linked naming patterns (e.g., `feat/`, `fix/`, `style/`).*
 
-[PASTE YOUR BRANCHING SCREENSHOT DIRECTLY HERE]
+<img width="1005" height="618" alt="image" src="https://github.com/user-attachments/assets/abb7e6c1-8396-4136-9b00-337aa52543ca" />
+
 
 * **Caption:** All branches follow the `type/issue-number-description` naming convention: `feat/1-project-structure, feat/4-password-checker, feat/7-file-encryptor, style/8-ui-refresh, fix/icon-fix`. No code was committed directly to main, except through pull requests.
 
 ### D. Pull Requests & Traceability
 *Provide a screenshot of a completed or open Pull Request (PR) on GitHub that clearly shows it is linked to a related development issue.*
 
-[PASTE YOUR PULL REQUEST SCREENSHOT DIRECTLY HERE]
+<img width="1339" height="561" alt="Screenshot 2026-08-16 222418" src="https://github.com/user-attachments/assets/b6baea4c-1fde-4bb2-8307-8058818745d7" />
+
 
 * **Caption:** The PR diables Jekyll processing to enable GitHub pages to serve the HTML, CSS and JavaScript file for deployment. It closes deployment issue #10
 
@@ -104,21 +108,24 @@ You must engineer **three merge conflicts**, each triggered by a **different cau
 #### Step 1: Generating the Clash
 *Screenshot showing the merge attempt and the conflict warning.*
 
-[PASTE SCREENSHOT OF ATTEMPTED MERGE / TERMINAL WARNING HERE]
+<img width="476" height="52" alt="Screenshot 2026-08-13 224141" src="https://github.com/user-attachments/assets/2f488a76-9c39-405e-97bc-3f454c2c190a" />
+
 
 * **Caption:** feat/7-file-encryptor collided with style/8-ui-refresh, which had a different accent colour of #6102a0, while the file encryptor branch had an accent colour of #26961c. Git reports CONFLICT (content) and stops the merge. 
 
 #### Step 2: Inside the Code Editor (Conflict Markers)
 *Screenshot showing the raw, unresolved conflict markers (`<<<<<<< HEAD`, `=======`, `>>>>>>>`) in your editor.*
 
-[PASTE SCREENSHOT OF RAW CONFLICT MARKERS HERE]
+<img width="720" height="482" alt="Screenshot 2026-08-13 222842" src="https://github.com/user-attachments/assets/1a711fb7-d7d7-4d48-b5b6-9eee84524b76" />
+
 
 * **Caption:** Both branches modified the same line, but with different accent colours. feat/7-file-encryptor changed it to #26961c, while style/8-ui-refresh changed it to #6102a0. Since Git cannot determine which replacement should take precedence, it reports CONFLICT (content) and pauses the merge for manual resolution. I resolved the conflict by restoring the original electric blue (#00d4ff) as the correct design accent, as it was the intended styling for the page.
 
 #### Step 3: Resolution & Clean Merge
 *Screenshot of your clean Git history or completed PR showing the conflict was resolved and merged.*
 
-[PASTE SCREENSHOT OF CLEAN RESOLUTION HERE]
+<img width="1267" height="556" alt="image" src="https://github.com/user-attachments/assets/662f0048-bea6-43b9-931f-4f2d3f934ee8" />
+
 
 * **Caption:** After removing the conflict markers and staging `style.css`, the resolution commit shows a clean single-parent history with the original accent colour restored as the only value on that line.
 
@@ -130,7 +137,8 @@ You must engineer **three merge conflicts**, each triggered by a **different cau
 
 **Why does this cause trigger a conflict?** Git tracks file identity across renames, therefore when one branch deletes `app.js` while another branch has committed changes to the same file, Git cannot determine whether to apply the modifications to the renamed file or treat the rename as a deletion. Unlike a line-level conflict, this is an identity conflict, where the two branches disagree on whether the file still exists under its original name.
 
-[PASTE SCREENSHOT OF CONFLICT MARKERS FOR CONFLICT 2 HERE]
+<img width="641" height="207" alt="Screenshot 2026-08-16 000026" src="https://github.com/user-attachments/assets/867d28e9-b263-4d93-9aa1-31da9ec28fe2" />
+
 
 * **Caption:** The conflict markers show HEAD's updated file header on line 3 against the incoming branch's different header on line 5 inside app.js. The rename from feat/6 forced Git to surface both versions of the header as a content conflict inside the file it wasn't sure should still exist.
 
@@ -142,7 +150,8 @@ You must engineer **three merge conflicts**, each triggered by a **different cau
 
 **Why does this cause trigger a conflict?** Git resolves changes by comparing both branches against their common ancestor. Both branches inserted new content at the end of the file, where the ancestor had nothing, and since neither insertion can be the "before" state for the other, Git cannot determine which block should come first and marks the entire insertion region as contested.
 
-[PASTE SCREENSHOT OF CONFLICT MARKERS FOR CONFLICT 3 HERE]
+<img width="589" height="264" alt="Screenshot 2026-08-16 004053" src="https://github.com/user-attachments/assets/e3f84f56-5f9e-4929-aedd-e285b4ff037e" />
+
 
 * **Caption:** The markers span two entirely new sections, a "Security Notes" block from `feat/4` and a "Known Limitations" block from `feat/5`, which both added content at the same point in `README.md`. I resolved by accepting both changes, as the sections complement each other rather than contradict each other. 
 
